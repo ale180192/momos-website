@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
 import {MatMenuTrigger} from '@angular/material/menu';
 import {ViewChild} from '@angular/core';
-import { AuthService } from '../../modules/auth.service';
+import { AuthService } from '../../pages/auth/auth.service';
 
 @Component({
   selector: 'app-navbar',
