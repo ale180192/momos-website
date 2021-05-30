@@ -17,6 +17,7 @@ export class LoginComponent implements OnInit {
   public isAuthenticated = this.authService.getIsAuth();
   private authSubscription: Subscription;
   public isLoading = false;
+  public signupUrl: string = "auth/signup"
 
   constructor( private fb: FormBuilder, private router: Router, private authService: AuthService ) {
     this.authSubscription = this.authService.getAuthStatusListener().subscribe( (isAuth: any) => {
