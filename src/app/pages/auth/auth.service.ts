@@ -15,7 +15,9 @@ export class AuthService {
   private tokenTimer: any;
   private authStatusListener = new Subject<boolean>();
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(private http: HttpClient, private router: Router) {
+    console.log("init authService");
+  }
 
   getToken() {
     return this.token;
@@ -32,7 +34,7 @@ export class AuthService {
 
   createUser(username: string, password: string) {
     const authData = {username, password};
-    this.http.post(`${this.baseUrl}/api/v1/authentication/token`, authData)
+    this.http.post(`${this.baseUrl}/api/v1/auth/token`, authData)
               .subscribe(response => {
                 console.log(response);
               });
@@ -40,31 +42,29 @@ export class AuthService {
 
   login(username: string, password: string) {
     const authData: Auth = {username, password};
-    console.log('data is ', authData);
-
-    this.http.post(`${this.baseUrl}/api/v1/authentication/token`, authData)
+    this.http.post(`${this.baseUrl}/api/v1/auth/token`, authData)
               .subscribe( (response: any) => {
-                console.log('response of the auth is ', response);
                 this.token = response.token;
                 if (response.token) {
-                  //const expiresInDuration = response.expiresIn
                   this.isAuthenticated = true;
                   this.saveAuthData(this.token);
                   this.authStatusListener.next(true);
-                  this.router.navigate(['/appointments/list']);
                 }
               }, (error: any) => {
-                console.log('error in the authentication');
-                console.log(error);
                 this.authStatusListener.next(false);
               });
   }
 
   autoAuth() {
+    console.log("call autoAuth");
+
     const authData: any = this.getAuthData();
+    console.log(authData);
+
     if (!authData) {
       return;
     }
+
     this.token = authData.token;
     this.isAuthenticated = true;
     this.authStatusListener.next(true);
@@ -80,6 +80,8 @@ export class AuthService {
   }
 
   private saveAuthData(token: string) {
+    console.log("save token", token);
+
     localStorage.setItem('token', token);
   }
 
@@ -89,6 +91,8 @@ export class AuthService {
 
   private getAuthData() {
     const token = localStorage.getItem('token');
+    console.log(token);
+
     if (!token) {
       return token;
     } else {

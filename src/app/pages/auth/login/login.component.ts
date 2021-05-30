@@ -20,12 +20,13 @@ export class LoginComponent implements OnInit {
 
   constructor( private fb: FormBuilder, private router: Router, private authService: AuthService ) {
     this.authSubscription = this.authService.getAuthStatusListener().subscribe( (isAuth: any) => {
-      console.log('result updated flag', isAuth);
       this.isAuthenticated = isAuth;
       this.isLoading = false;
+      if (isAuth)
+        this.router.navigate(['/home']);
     });
     if (this.isAuthenticated) {
-      this.router.navigate(['/apis/list']);
+      this.router.navigate(['/home']);
     }
   }
 

@@ -3,6 +3,7 @@ import { Subscription } from 'rxjs';
 import {MatMenuTrigger} from '@angular/material/menu';
 import {ViewChild} from '@angular/core';
 import { AuthService } from '../../pages/auth/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-navbar',
@@ -14,17 +15,40 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   public isAuth = false;
   private authSubscription: Subscription;
-  constructor(private authService: AuthService) {
+  public sessionMessage: string = "Login";
+  public loginUrl: string = "auth/login"
+  constructor(private router: Router, private authService: AuthService) {
+    console.log("init navbar");
+    authService.autoAuth()
+
   }
 
   ngOnInit() {
     this.isAuth = this.authService.getIsAuth();
     this.authSubscription = this.authService.getAuthStatusListener()
-                                  .subscribe( isAuth => {
-                                    this.isAuth = isAuth;
-                                  });
-    console.log('statusbar.  is auth', this.isAuth);
-  }
+                              .subscribe( isAuth => {
+                                console.log("event from authService with: ", isAuth);
+
+                                this.isAuth = isAuth;
+                                if (isAuth) {
+                                  this.sessionMessage = "Logout"
+                                  this.loginUrl = "auth/logout"
+                                }
+                                else {
+                                  this.sessionMessage = "Login"
+                                  this.loginUrl = "auth/login"
+                                }
+                              });
+    console.log("isAuth: ", this.isAuth);
+
+    if (this.isAuth) {
+      this.sessionMessage = "Logout"
+    }
+    else {
+      this.sessionMessage = "Login"
+    }
+}
+
 
   ngOnDestroy(): void {
     this.authSubscription.unsubscribe();
@@ -35,8 +59,13 @@ export class NavbarComponent implements OnInit, OnDestroy {
     this.trigger.openMenu();
   }
 
-  logout() {
-    this.authService.logouth();
+  SessionAction() {
+    if (this.isAuth) {
+      this.authService.logouth();
+      this.router.navigate([this.loginUrl]);
+    } else {
+      this.router.navigate([this.loginUrl]);
+    }
   }
 
 }
